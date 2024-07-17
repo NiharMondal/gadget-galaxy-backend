@@ -1,0 +1,17 @@
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.join(process.cwd(), ".env") });
+
+export default {
+	port: process.env.PORT,
+	db_uri: process.env.URI,
+	salt_round: process.env.SALT_ROUND,
+	jwt_secret: process.env.JWT_SECTET,
+	jwt_expires: process.env.JWT_EXPIRES,
+	cloudinary: {
+		name: process.env.CLOUD_NAME,
+		api_key: process.env.API_KEY,
+		api_secret: process.env.API_SECRET,
+	},
+};
