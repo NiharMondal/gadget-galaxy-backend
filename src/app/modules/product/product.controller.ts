@@ -16,7 +16,9 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
-	const result = await productServices.getAllFromDB();
+	const query = req.query;
+
+	const result = await productServices.getAllFromDB(query as TQuery);
 
 	sendResponse(res, {
 		statusCode: 200,

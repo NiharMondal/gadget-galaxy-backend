@@ -11,7 +11,7 @@ router
 	.route("/")
 	.post(
 		// authGaurd(Role.ADMIN,Role.SUPER_ADMIN),
-		validateRequest(productValidation.createProduct),
+		// validateRequest(productValidation.createProduct),
 		productController.insertIntoDB
 	)
 	.get(productController.getAllFromDB);

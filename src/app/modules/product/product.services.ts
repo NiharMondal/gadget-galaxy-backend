@@ -1,8 +1,11 @@
-import { Product } from "@prisma/client";
+import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../../../db/db";
 import slugify from "slugify";
+import { pagination } from "../../../helpers/pagination";
+
 
 const insertIntoDB = async (payload: Product) => {
+
 	const slug =  slugify(payload.name,{lower:true});
 	const res = await prisma.product.create({
 		data: {
@@ -14,13 +17,66 @@ const insertIntoDB = async (payload: Product) => {
 	return res;
 };
 
-const getAllFromDB = async () => {
-	const res = await prisma.product.findMany({
-		where: {
-			isDeleted: false,
-		},
+const getAllFromDB = async (query: TQuery) => {
+	const queryCopy = {...query}
+	
+	const excludedField = ["sortby", "orderBy", "page","limit"];
+	excludedField.forEach(field=> delete queryCopy[field]);
+ 
+	const {search, price, ...others} = queryCopy;
+	const {limit, skip} = pagination(Number(query.page), Number(query.limit))
+
+	const andConditions:Prisma.ProductWhereInput[] = []
+
+	if (search) {
+		andConditions.push({
+			OR: ["name"].map((value) => ({
+				[value]: {
+					contains: queryCopy.search,
+					mode: "insensitive",
+				},
+			})),
+		});
+	}
+
+	if (price) {
+		const splitedValue = queryCopy.price.split(",");
+		andConditions.push({
+			OR: [
+				{
+					price: {
+						gte: Number(splitedValue[0]),
+						lte: Number(splitedValue[1]),
+					},
+				},
+			],
+		});
+	};
+
+	if (Object.keys(others).length > 0) {
+		andConditions.push({
+			OR: Object.keys(others).map((key) => ({
+				[key]: {
+					in: (others as any)[key].split(","),
+				},
+			})),
+		});
+	}
+
+	const whereConditions:Prisma.ProductWhereInput = {AND: andConditions}
+
+	const result = await prisma.product.findMany({
+		where: whereConditions,
+		skip,
+		take:limit,
+		orderBy: query.orderBy? {
+			price:  query.orderBy as "asc" | "desc"
+		}: {
+			createdAt:"desc"
+		}
+	
 	});
-	return res;
+	return result;
 };
 
 const getById = async (id: string) => {

@@ -7,6 +7,7 @@ import { subCategoryRoutes } from "../modules/subCategory/subCategory.route";
 import { addressRoutes } from "../modules/address/address.route";
 import { authRoutes } from "../modules/auth/auth.route";
 import { profileRoutes } from "../modules/profile/profile.route";
+import { fieldRouter } from "../modules/field/field.route";
 
 export const routeArray = [
 	{
@@ -44,5 +45,9 @@ export const routeArray = [
 	{
 		path: "/profile",
 		route: profileRoutes,
+	},
+	{
+		path: "/property",
+		route: fieldRouter,
 	},
 ];
