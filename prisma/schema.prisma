@@ -116,12 +116,11 @@ model Product {
   inStock          Int
   isDeleted        Boolean  @default(false)
   rating           Float    @default(0)
-  reviews          Review[]
-  brand            Brand?   @relation(fields: [brandId], references: [id])
-  brandId          String?  @db.ObjectId
+  brand            String
   processor_type   String
   processor_model  String
   generation       String
+  display          String
   display_size     String
   display_type     String
   ram              String
@@ -132,7 +131,9 @@ model Product {
   operating_system String
   features         String[]
 
-  slug            String            @default("")
+  slug String @default("")
+
+  reviews         Review[]
   offeredProduct  OfferedProduct[]
   featuredProduct FeaturedProduct[]
   orderedProduct  OrderedProduct[]
@@ -165,10 +166,8 @@ model FeaturedProduct {
 }
 
 model Brand {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  name     String    @unique
-  products Product[]
-
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

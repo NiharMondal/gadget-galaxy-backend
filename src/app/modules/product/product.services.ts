@@ -28,7 +28,7 @@ const getAllFromDB = async (query: TQuery) => {
 
 	const andConditions:Prisma.ProductWhereInput[] = []
 
-	if (search) {
+	if (search) { 
 		andConditions.push({
 			OR: ["name"].map((value) => ({
 				[value]: {
