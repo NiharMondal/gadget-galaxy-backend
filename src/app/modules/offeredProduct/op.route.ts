@@ -18,4 +18,4 @@ router
 	.patch(opController.updateIntoDB)
 	.delete(opController.deleteFromDB);
 
-export const categoryRoutes = router;
+export const hotOffersRoutes = router;

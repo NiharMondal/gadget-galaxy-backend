@@ -9,5 +9,5 @@ router
 	.get(userController.getById)
 	.patch(userController.updateIntoDB)
 	.delete(userController.deleteFromDB);
-
+router.route("/:id/update-avatar").patch(userController.updateUserAvatar)
 export const userRoutes = router;

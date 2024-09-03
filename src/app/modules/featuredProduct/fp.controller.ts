@@ -6,6 +6,7 @@ import { fpServices } from "./fp.services";
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 	const body = req.body;
+	
 	const result = await fpServices.insertIntoDB(body);
 
 	sendResponse(res, {
@@ -40,7 +41,7 @@ const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
 	const result = await fpServices.updateIntoDB(id, req.body);
 
 	sendResponse(res, {
-		statusCode: 201,
+		statusCode: 200,
 		message: "Feature product updated successfully",
 		data: result,
 	});
@@ -51,7 +52,7 @@ const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 	const result = await fpServices.deleteFromDB(id);
 
 	sendResponse(res, {
-		statusCode: 201,
+		statusCode: 200,
 		message: "Feature product deleted successfully",
 		data: result,
 	});

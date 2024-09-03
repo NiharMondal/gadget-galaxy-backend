@@ -20,6 +20,7 @@ model User {
   email          String   @unique
   password       String
   avatar         String?
+  phone          String?
   role           Role     @default(CUSTOMER)
   address        Address?
   orders         Order[]
@@ -27,6 +28,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("user")
 }
 
 model Review {
@@ -43,59 +46,53 @@ model Review {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("review")
 }
 
 model Address {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  phone   String
-  street  String
-  city    String
-  country String
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId String @unique @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id])
+  street   String
+  postCode String
+  city     String
+  country  String
+  userId   String @unique @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("address")
 }
 
 model Order {
   id              String           @id @default(auto()) @map("_id") @db.ObjectId
   userId          String?          @db.ObjectId
-  vat             Float
-  shippingCost    Float
-  totalPrice      Float
-  shippingAddress address
-  user            User?            @relation(fields: [userId], references: [id])
+  totalPrice      Int
   products        OrderedProduct[]
-  payment         Payment?
+  user            User?            @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("order")
 }
 
 model OrderedProduct {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   productId String  @db.ObjectId
-  price     Int
+  name      String
+  price     Float
   quantity  Int
-  orderId   String? @unique @db.ObjectId
+  orderId   String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   order     Order?  @relation(fields: [orderId], references: [id])
+
+  @@map("ordered-product")
 }
 
-model Payment {
-  id     String        @id @default(auto()) @map("_id") @db.ObjectId
-  status PaymentStatus @default(PENDING)
-  method PaymentMethod @default(ONLINE)
-
-  orderId String @unique @db.ObjectId
-  order   Order  @relation(fields: [orderId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Cuppon {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -105,15 +102,18 @@ model Cuppon {
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@map("cuppon")
 }
 
 model Product {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
+  name             String   @unique
   description      String
   price            Float
   regularPrice     Float
   inStock          Int
+  photo            String
   isDeleted        Boolean  @default(false)
   rating           Float    @default(0)
   brand            String
@@ -129,30 +129,33 @@ model Product {
   ssd              String
   graphics         String
   operating_system String
+  slug             String   @unique
   features         String[]
 
-  slug String @default("")
-
   reviews         Review[]
-  offeredProduct  OfferedProduct[]
+  offeredProduct  HotOffers[]
   featuredProduct FeaturedProduct[]
   orderedProduct  OrderedProduct[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("product")
 }
 
-model OfferedProduct {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  discount  Float
-  startDate String
-  endDate   String
+model HotOffers {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  discount Float
+  price    Float  @default(0)
+  endDate  String
 
   product   Product @relation(fields: [productId], references: [id])
   productId String  @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("hot-offer")
 }
 
 model FeaturedProduct {
@@ -163,13 +166,8 @@ model FeaturedProduct {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
-model Brand {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("featured-product")
 }
 
 type address {
@@ -177,15 +175,4 @@ type address {
   street  String
   city    String
   country String
-}
-
-enum PaymentStatus {
-  PENDING
-  ONWAY
-  DELIVERED
-}
-
-enum PaymentMethod {
-  ONLINE
-  CASH
 }

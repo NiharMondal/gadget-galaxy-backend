@@ -5,6 +5,7 @@ import sendResponse from "../../../utils/sendResponse";
 import { opServices } from "./op.services";
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
+	
 	const body = req.body;
 	const result = await opServices.insertIntoDB(body);
 

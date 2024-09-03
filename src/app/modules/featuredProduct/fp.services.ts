@@ -1,17 +1,34 @@
 import {  FeaturedProduct } from "@prisma/client";
 import { prisma } from "../../../db/db";
+import AppError from "../../../utils/appError";
 
 const insertIntoDB = async (payload: FeaturedProduct) => {
-	const res = await prisma.featuredProduct.create({
-		data: payload,
-	});
 
-	return res;
+	const result = await prisma.$transaction(async(tx)=>{
+		
+		const product = await tx.featuredProduct.findFirst({
+			where:{
+				productId: payload.productId
+			}
+		})
+		if(product){
+			throw new AppError(302,"Product already exists in featured lists!")
+		}
+
+		const data = await tx.featuredProduct.create({
+			data:payload
+		});
+		return data;
+	})
+
+	return result;
 };
 
 const getAllFromDB = async () => {
 	const res = await prisma.featuredProduct.findMany({
-		
+		include:{
+			product:true
+		}
 	});
 	return res;
 };

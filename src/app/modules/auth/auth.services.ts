@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-import exclude from "../../../helpers/excludeFields";
+
 import { User } from "@prisma/client";
 import config from "../../../config";
 import { prisma } from "../../../db/db";
@@ -15,7 +15,7 @@ type TLoginPayload = {
 type TChangePasswordPayload = {
 	user: JwtPayload;
 	payload: {
-		password: string;
+		oldPassword: string;
 		newPassword: string;
 	};
 };
@@ -40,10 +40,20 @@ const register = async (payload: User) => {
 			...payload,
 			password: hashPassword,
 		},
+		select:{
+			id:true,
+			name:true,
+			email:true,
+			phone:true,
+			role:true,
+			avatar:true,
+			createdAt:true,
+			updatedAt:true,
+		}
 	});
 
-	const withoutPass = exclude(user, ["password"]);
-	return withoutPass;
+	
+	return user;
 };
 
 const login = async (payload: TLoginPayload) => {
@@ -69,7 +79,11 @@ const login = async (payload: TLoginPayload) => {
 		expiresIn: config.jwt_expires,
 	});
 
-	return { userToken, avatar: user.avatar };
+	return { 
+		
+		authToken: userToken, 
+		avatar: user.avatar,
+	};
 };
 
 const forgotPassword = async (payload: { email: string }) => {
@@ -86,7 +100,7 @@ const forgotPassword = async (payload: { email: string }) => {
 };
 const changePassword = async ({ payload, user }: TChangePasswordPayload) => {
 	//check new password and old password
-	if (payload.password === payload.newPassword) {
+	if (payload.oldPassword === payload.newPassword) {
 		throw new AppError(400, "New password can't be current password!");
 	}
 
@@ -98,7 +112,7 @@ const changePassword = async ({ payload, user }: TChangePasswordPayload) => {
 	});
 
 	const matchPassword = await bcrypt.compare(
-		payload.password,
+		payload.oldPassword,
 		userDetails.password
 	);
 

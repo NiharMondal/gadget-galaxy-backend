@@ -1,14 +1,9 @@
 import { Address } from "@prisma/client";
 import { prisma } from "../../../db/db";
+import { JwtPayload } from "jsonwebtoken";
 
 
-const insertIntoDB = async (payload: Address) => {
-	const res = await prisma.address.create({
-		data: payload,
-	});
 
-	return res;
-};
 
 const getAllFromDB = async () => {
 	const res = await prisma.address.findMany();
@@ -18,7 +13,7 @@ const getAllFromDB = async () => {
 const getById = async (id: string) => {
 	const res = await prisma.address.findUniqueOrThrow({
 		where: {
-			id: id,
+			userId: id,
 		},
 	});
 
@@ -26,30 +21,25 @@ const getById = async (id: string) => {
 };
 
 const updateIntoDB = async (id: string, payload: Address) => {
-	const res = await prisma.address.update({
-		where: {
-			id: id,
+
+	const res = await prisma.address.upsert({
+		where:{
+			userId: id,
 		},
-		data: payload,
+		update: payload,
+		create:{
+			...payload,
+			userId: id
+		}
 	});
 
 	return res;
 };
 
-const deleteFromDB = async (id: string) => {
-	const res = await prisma.address.delete({
-		where: {
-			id: id,
-		},
-	});
 
-	return res;
-};
 
 export const addressServices = {
-	insertIntoDB,
 	getAllFromDB,
 	getById,
 	updateIntoDB,
-	deleteFromDB,
 };

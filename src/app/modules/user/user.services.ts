@@ -1,8 +1,6 @@
 import { User } from "@prisma/client";
-import bcrypt from "bcrypt";
-import config from "../../../config";
 import { prisma } from "../../../db/db";
-import exclude from "../../../helpers/excludeFields";
+
 
 const getAllFromDB = async () => {
 	const user = await prisma.user.findMany({
@@ -27,9 +25,20 @@ const getById = async (id: string) => {
 		where: {
 			id: id,
 		},
+		select:{
+			id:true,
+			name:true,
+			email:true,
+			phone:true,
+			role:true,
+			avatar:true,
+			createdAt:true,
+			updatedAt:true,
+
+		}
 	});
-	const withoutPass = exclude(singleUser, ["password"]);
-	return withoutPass;
+
+	return singleUser;
 };
 
 const updateIntoDB = async (id: string, payload: User) => {
@@ -38,10 +47,19 @@ const updateIntoDB = async (id: string, payload: User) => {
 			id: id,
 		},
 		data: payload,
+		select:{
+			id:true,
+			name:true,
+			email:true,
+			phone:true,
+			role:true,
+			avatar:true,
+			createdAt:true,
+			updatedAt:true,
+		}
 	});
 
-	const withoutPass = exclude(user, ["password"]);
-	return withoutPass;
+	return user;
 };
 
 const deleteFromDB = async (id: string) => {
@@ -53,10 +71,26 @@ const deleteFromDB = async (id: string) => {
 
 	return res;
 };
+const updateUserAvatar = async(id:string, payload:{avatar:string})=>{
+	const res = await prisma.user.update({
+		where:{
+			id:id
+		},
+		data:{
+			avatar: payload.avatar
+		},select:{
+			avatar:true,
+			id:true,
+			
+		}
+	});
 
+	return res;
+}
 export const userServices = {
 	getAllFromDB,
 	getById,
 	updateIntoDB,
 	deleteFromDB,
+	updateUserAvatar
 };

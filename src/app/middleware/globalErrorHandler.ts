@@ -33,6 +33,13 @@ const globalErrorHandler = (
 			errorResponse.errorDetails = "Alreay exist!";
 		}
 	}
+	if (err instanceof Prisma.PrismaClientKnownRequestError) {
+		if (err.code === "P2025") {
+			errorResponse.statusCode = 404;
+			errorResponse.message = "ID is not found";
+			errorResponse.errorDetails = "Sorry, ID is not found in Database"
+		}
+	}
 	res.status(errorResponse.statusCode).json({
 		success: false,
 		message: errorResponse.message,

@@ -18,4 +18,4 @@ router
 	.patch(fpController.updateIntoDB)
 	.delete(fpController.deleteFromDB);
 
-export const categoryRoutes = router;
+export const featuredProductRoutes = router;

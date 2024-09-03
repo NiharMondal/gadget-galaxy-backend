@@ -1,16 +1,17 @@
-import { Order, OrderedItem } from "@prisma/client";
+import { Order, OrderedProduct } from "@prisma/client";
 import { prisma } from "../../../db/db";
 import AppError from "../../../utils/appError";
 
-
 type TPayload = {
-	items: OrderedItem[];
+	items: OrderedProduct[];
 } & Order;
 
 const insertIntoDB = async (payload: TPayload) => {
-	const { items, ...rest } = payload;
-
+	
+	const {items, ...rest} = payload;
+	
 	try {
+		
 		const result = await prisma.$transaction(
 			async (tx) => {
 				for (const item of items) {
@@ -40,26 +41,24 @@ const insertIntoDB = async (payload: TPayload) => {
 					});
 				}
 
-				const orders = await tx.order.create({
+				const res = await tx.order.create({
 					data: {
 						...rest,
-						items: {
-							create: items.map((item: OrderedItem) => ({
+						products: {
+							create: items.map((item: OrderedProduct) => ({
 								...item,
 							})),
 						},
 					},
 				});
-				return orders;
+
+				return res;
+				
 			},
-			{
-				maxWait: 10000,
-				timeout: 10000,
-			}
 		);
 		return result;
-	} catch (error: any) {
-		throw new AppError(500, error);
+	} catch (error) {
+		throw new AppError(500, "Something went wrong!")
 	}
 };
 
@@ -69,10 +68,20 @@ const getAllFromDB = async () => {
 };
 
 const getById = async (id: string) => {
-	const res = await prisma.order.findUniqueOrThrow({
+	const res = await prisma.user.findUniqueOrThrow({
 		where: {
 			id: id,
 		},
+		select:{
+			orders:{
+				select:{
+					id:true,
+					totalPrice:true,
+					createdAt:true,
+					products:true
+				}
+			}
+		}
 	});
 
 	return res;

@@ -24,8 +24,7 @@ const getAllFromDB = async (query: TQuery) => {
 	excludedField.forEach(field=> delete queryCopy[field]);
  
 	const {search, price, ...others} = queryCopy;
-	const {limit, skip} = pagination(Number(query.page), Number(query.limit))
-
+	const {limit, skip,page} = pagination(Number(query.page), Number(query.limit))
 	const andConditions:Prisma.ProductWhereInput[] = []
 
 	if (search) { 
@@ -53,39 +52,50 @@ const getAllFromDB = async (query: TQuery) => {
 		});
 	};
 
-	if (Object.keys(others).length > 0) {
-		andConditions.push({
-			OR: Object.keys(others).map((key) => ({
-				[key]: {
-					in: (others as any)[key].split(","),
-				},
-			})),
-		});
-	}
+	 // Handle other filters
+    if (Object.keys(others).length > 0) {
+        andConditions.push({
+            OR: Object.keys(others).map((key) => ({
+                [key]: {
+                    in: decodeURIComponent(others[key]).split(","),
+                },
+            })),
+        });
+    }
 
 	const whereConditions:Prisma.ProductWhereInput = {AND: andConditions}
-
+	const total = await prisma.product.count({where:whereConditions});
+	const totalPages = Math.ceil(total/limit)
 	const result = await prisma.product.findMany({
 		where: whereConditions,
 		skip,
 		take:limit,
-		orderBy: query.orderBy? {
+		orderBy: query.orderBy ? {
 			price:  query.orderBy as "asc" | "desc"
 		}: {
-			createdAt:"desc"
+			createdAt:"asc"
 		}
 	
 	});
-	return result;
+	const meta = {
+		page,
+		totalPages,
+	}
+	return {
+		meta,
+		result
+	};
 };
 
-const getById = async (id: string) => {
+const getById = async (slug: string) => {
 	const res = await prisma.product.findUniqueOrThrow({
-		where: {
-			id: id,
+		where:{
+			slug:slug
 		},
+		include:{
+			reviews:true
+		}
 	});
-
 	return res;
 };
 
@@ -104,6 +114,7 @@ const deleteFromDB = async (id: string) => {
 	const res = await prisma.product.delete({
 		where: {
 			id: id,
+			
 		},
 	});
 

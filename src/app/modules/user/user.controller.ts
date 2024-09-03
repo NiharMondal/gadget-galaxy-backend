@@ -30,7 +30,7 @@ const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
 	const result = await userServices.updateIntoDB(id, req.body);
 
 	sendResponse(res, {
-		statusCode: 201,
+		statusCode: 200,
 		message: "User updated successfully",
 		data: result,
 	});
@@ -41,15 +41,30 @@ const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 	const result = await userServices.deleteFromDB(id);
 
 	sendResponse(res, {
-		statusCode: 201,
+		statusCode: 200,
 		message: "User deleted successfully",
 		data: result,
 	});
 });
+
+
+const updateUserAvatar = catchAsync(async (req: Request, res: Response) => {
+	const { id } = req.params;
+	const result = await userServices.updateUserAvatar(id,req.body);
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Phofile photo changed successfully",
+		data: result,
+	});
+});
+
+
 export const userController = {
 	
 	getAllFromDB,
 	getById,
 	updateIntoDB,
 	deleteFromDB,
+	updateUserAvatar
 };

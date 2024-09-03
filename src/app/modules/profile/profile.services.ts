@@ -1,6 +1,6 @@
 import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../../db/db";
-import exclude from "../../../helpers/excludeFields";
+
 
 const profile = async (payload: JwtPayload) => {
 	const aboutMe = await prisma.user.findUniqueOrThrow({
@@ -8,14 +8,22 @@ const profile = async (payload: JwtPayload) => {
 			email: payload.email,
 			id: payload.id,
 		},
-		include: {
+		select: {
+			id:true,
+			name:true,
+			email:true,
+			phone:true,
+			role:true,
+			avatar:true,
 			address: true,
 			orders: true,
+			createdAt:true,
+			updatedAt:true,
 		},
 	});
 
-	const withoutPass = exclude(aboutMe, ["password"]);
-	return withoutPass;
+	
+	return aboutMe;
 };
 
 export const profileServices = { profile };

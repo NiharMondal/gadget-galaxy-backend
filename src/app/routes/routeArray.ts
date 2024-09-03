@@ -1,27 +1,16 @@
-import { brandRoutes } from "../modules/brand/brand.route";
-import { categoryRoutes } from "../modules/category/category.route";
+
 import { userRoutes } from "../modules/user/user.route";
 import { productRoutes } from "../modules/product/product.route";
 import { orderRoutes } from "../modules/order/order.route";
-import { subCategoryRoutes } from "../modules/subCategory/subCategory.route";
 import { addressRoutes } from "../modules/address/address.route";
 import { authRoutes } from "../modules/auth/auth.route";
 import { profileRoutes } from "../modules/profile/profile.route";
-import { fieldRouter } from "../modules/field/field.route";
+
+import { hotOffersRoutes } from "../modules/offeredProduct/op.route";
+import { featuredProductRoutes } from "../modules/featuredProduct/fp.route";
+import { checkoutRoutes } from "../modules/checkout/checkout.route";
 
 export const routeArray = [
-	{
-		path: "/brand",
-		route: brandRoutes,
-	},
-	{
-		path: "/category",
-		route: categoryRoutes,
-	},
-	{
-		path: "/sub-category",
-		route: subCategoryRoutes,
-	},
 	{
 		path: "/user",
 		route: userRoutes,
@@ -33,6 +22,14 @@ export const routeArray = [
 	{
 		path: "/product",
 		route: productRoutes,
+	},
+	{
+		path: "/hot-offer",
+		route: hotOffersRoutes,
+	},
+	{
+		path: "/featured-product",
+		route: featuredProductRoutes,
 	},
 	{
 		path: "/order",
@@ -47,7 +44,8 @@ export const routeArray = [
 		route: profileRoutes,
 	},
 	{
-		path: "/property",
-		route: fieldRouter,
+		path: "/checkout",
+		route: checkoutRoutes,
 	},
+	
 ];

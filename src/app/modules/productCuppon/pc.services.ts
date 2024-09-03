@@ -1,8 +1,8 @@
-import {  ProductCuppon } from "@prisma/client";
+import {  Cuppon } from "@prisma/client";
 import { prisma } from "../../../db/db";
 
-const insertIntoDB = async (payload: ProductCuppon) => {
-	const res = await prisma.productCuppon.create({
+const insertIntoDB = async (payload: Cuppon) => {
+	const res = await prisma.cuppon.create({
 		data: payload,
 	});
 
@@ -10,12 +10,12 @@ const insertIntoDB = async (payload: ProductCuppon) => {
 };
 
 const getAllFromDB = async () => {
-	const res = await prisma.productCuppon.findMany();
+	const res = await prisma.cuppon.findMany();
 	return res;
 };
 
 const getById = async (id: string) => {
-	const res = await prisma.productCuppon.findUnique({
+	const res = await prisma.cuppon.findUnique({
 		where: {
 			id: id,
 		},
@@ -24,8 +24,8 @@ const getById = async (id: string) => {
 	return res;
 };
 
-const updateIntoDB = async (id: string, payload: ProductCuppon) => {
-	const res = await prisma.productCuppon.update({
+const updateIntoDB = async (id: string, payload: Cuppon) => {
+	const res = await prisma.cuppon.update({
 		where: {
 			id: id,
 		},
@@ -36,7 +36,7 @@ const updateIntoDB = async (id: string, payload: ProductCuppon) => {
 };
 
 const deleteFromDB = async (id: string) => {
-	const res = await prisma.productCuppon.delete({
+	const res = await prisma.cuppon.delete({
 		where: {
 			id: id,
 		},

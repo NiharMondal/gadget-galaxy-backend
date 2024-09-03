@@ -23,14 +23,14 @@ router.patch(
 );
 
 router
-	.route("/:id")
+	.route("/:slug")
 	.get(productController.getById)
 	.patch(
 		authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
 		productController.updateIntoDB
 	)
 	.delete(
-		authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
+		// authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
 		productController.deleteFromDB
 	);
 
