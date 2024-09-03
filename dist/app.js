@@ -10,7 +10,7 @@ const notFound_1 = __importDefault(require("./app/middleware/notFound"));
 const routes_1 = require("./app/routes");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({ origin: "http://localhost:3000", credentials: true }));
+app.use((0, cors_1.default)({ origin: "https://gadget-galaxy-smoky.vercel.app/", credentials: true }));
 //root router
 app.use("/api/v1", routes_1.rootRouter);
 //not found
