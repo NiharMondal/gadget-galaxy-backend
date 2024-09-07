@@ -9,10 +9,18 @@ router
 	.post(orderController.insertIntoDB)
 	.get(orderController.getAllFromDB);
 
+//admin
+router.get("/customer",orderController.getCustomer)
+//admin
+router.get("/latest-order",orderController.getLatestOrder)
+
+
 router
 	.route("/:id")
 	.get(orderController.getById)
 	.patch(orderController.updateIntoDB)
 	.delete(orderController.deleteFromDB);
+
+
 
 export const orderRoutes = router;

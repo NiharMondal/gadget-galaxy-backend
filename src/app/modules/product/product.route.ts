@@ -11,12 +11,19 @@ router
 	.route("/")
 	.post(
 		// authGaurd(Role.ADMIN,Role.SUPER_ADMIN),
-		// validateRequest(productValidation.createProduct),
+		validateRequest(productValidation.createProduct),
 		productController.insertIntoDB
 	)
 	.get(productController.getAllFromDB);
 
-router.patch(
+//related product according to price
+router.get("/related-product/:slug", productController.relatedProduct);
+
+//for admin
+router.get("/admin/:id", productController.getById);
+
+//admin
+router.delete(
 	"/soft/:id",
 	authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
 	productController.softDeleteFromDB
@@ -24,13 +31,13 @@ router.patch(
 
 router
 	.route("/:slug")
-	.get(productController.getById)
+	.get(productController.getBySlug)
 	.patch(
 		authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
 		productController.updateIntoDB
 	)
 	.delete(
-		// authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
+		authGaurd(Role.ADMIN, Role.SUPER_ADMIN),
 		productController.deleteFromDB
 	);
 

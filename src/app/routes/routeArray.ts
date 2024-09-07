@@ -9,6 +9,7 @@ import { profileRoutes } from "../modules/profile/profile.route";
 import { hotOffersRoutes } from "../modules/offeredProduct/op.route";
 import { featuredProductRoutes } from "../modules/featuredProduct/fp.route";
 import { checkoutRoutes } from "../modules/checkout/checkout.route";
+import { adminDataRoutes } from "../modules/adminData/adminData.route";
 
 export const routeArray = [
 	{
@@ -46,6 +47,10 @@ export const routeArray = [
 	{
 		path: "/checkout",
 		route: checkoutRoutes,
+	},
+	{
+		path: "/meta-data",
+		route: adminDataRoutes,
 	},
 	
 ];

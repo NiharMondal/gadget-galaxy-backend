@@ -18,7 +18,6 @@ const sendResponse_1 = __importDefault(require("../../../utils/sendResponse"));
 const product_services_1 = require("./product.services");
 const insertIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = req.body;
-    console.log(body);
     const result = yield product_services_1.productServices.insertIntoDB(body);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
@@ -37,7 +36,15 @@ const getAllFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const getById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield product_services_1.productServices.getById(req.params.slug);
+    const result = yield product_services_1.productServices.getById(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        message: "Single Product retrived successfully",
+        data: result,
+    });
+}));
+const getBySlug = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_services_1.productServices.getBySlug(req.params.slug);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         message: "Single Product retrived successfully",
@@ -45,8 +52,8 @@ const getById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
     });
 }));
 const updateIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const result = yield product_services_1.productServices.updateIntoDB(id, req.body);
+    const { slug } = req.params;
+    const result = yield product_services_1.productServices.updateIntoDB(slug, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         message: "Product updated successfully",
@@ -62,12 +69,22 @@ const deleteFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+// admin --> soft delete
 const softDeleteFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield product_services_1.productServices.deleteFromDB(id);
+    const result = yield product_services_1.productServices.softDeleteFromDB(id);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         message: "Product deleted successfully",
+        data: result,
+    });
+}));
+const relatedProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { slug } = req.params;
+    const result = yield product_services_1.productServices.relatedProduct(slug);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        message: "Related product fetched successfully",
         data: result,
     });
 }));
@@ -75,7 +92,9 @@ exports.productController = {
     insertIntoDB,
     getAllFromDB,
     getById,
+    getBySlug,
     updateIntoDB,
     deleteFromDB,
-    softDeleteFromDB
+    softDeleteFromDB,
+    relatedProduct
 };

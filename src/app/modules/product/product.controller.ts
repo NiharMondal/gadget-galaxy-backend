@@ -6,7 +6,7 @@ import { productServices } from "./product.services";
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 	const body = req.body;
-	console.log(body)
+	
 	const result = await productServices.insertIntoDB(body);
 
 	sendResponse(res, {
@@ -29,7 +29,16 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getById = catchAsync(async (req: Request, res: Response) => {
-	const result = await productServices.getById(req.params.slug);
+	const result = await productServices.getById(req.params.id);
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Single Product retrived successfully",
+		data: result,
+	});
+});
+const getBySlug = catchAsync(async (req: Request, res: Response) => {
+	const result = await productServices.getBySlug(req.params.slug);
 
 	sendResponse(res, {
 		statusCode: 200,
@@ -39,8 +48,8 @@ const getById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
-	const { id } = req.params;
-	const result = await productServices.updateIntoDB(id, req.body);
+	const { slug } = req.params;
+	const result = await productServices.updateIntoDB(slug, req.body);
 
 	sendResponse(res, {
 		statusCode: 200,
@@ -59,9 +68,11 @@ const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 		data: result,
 	});
 });
+
+// admin --> soft delete
 const softDeleteFromDB = catchAsync(async (req: Request, res: Response) => {
 	const { id } = req.params;
-	const result = await productServices.deleteFromDB(id);
+	const result = await productServices.softDeleteFromDB(id);
 
 	sendResponse(res, {
 		statusCode: 200,
@@ -69,11 +80,24 @@ const softDeleteFromDB = catchAsync(async (req: Request, res: Response) => {
 		data: result,
 	});
 });
+const relatedProduct = catchAsync(async (req: Request, res: Response) => {
+	const { slug } = req.params;
+	const result = await productServices.relatedProduct(slug);
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Related product fetched successfully",
+		data: result,
+	});
+});
 export const productController = {
 	insertIntoDB,
 	getAllFromDB,
 	getById,
+	getBySlug,
 	updateIntoDB,
 	deleteFromDB,
-	softDeleteFromDB
+	softDeleteFromDB,
+
+	relatedProduct
 };

@@ -25,11 +25,13 @@ const insertIntoDB = async (payload: FeaturedProduct) => {
 };
 
 const getAllFromDB = async () => {
-	const res = await prisma.featuredProduct.findMany({
-		include:{
-			product:true
+	const res = await prisma.featuredProduct.findMany({where:{
+		product:{
+			isDeleted:false
 		}
-	});
+	},include:{
+		product:true
+	}});
 	return res;
 };
 

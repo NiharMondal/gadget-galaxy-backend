@@ -40,7 +40,11 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     return res;
 });
 const getAllFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield db_1.prisma.hotOffers.findMany({ include: {
+    const res = yield db_1.prisma.hotOffers.findMany({ where: {
+            product: {
+                isDeleted: false
+            }
+        }, include: {
             product: true
         } });
     return res;

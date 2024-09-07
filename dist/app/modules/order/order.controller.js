@@ -59,10 +59,30 @@ const deleteFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+//admin
+const getCustomer = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield order_services_1.orderServices.getCustomer();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        message: "Customer fetched successfully",
+        data: result,
+    });
+}));
+//admin
+const getLatestOrder = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield order_services_1.orderServices.getLatestOrder();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        message: "Latest fetched successfully",
+        data: result,
+    });
+}));
 exports.orderController = {
     insertIntoDB,
     getAllFromDB,
     getById,
     updateIntoDB,
     deleteFromDB,
+    getCustomer,
+    getLatestOrder
 };

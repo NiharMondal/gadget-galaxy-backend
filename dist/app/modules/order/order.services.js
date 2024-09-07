@@ -105,10 +105,40 @@ const deleteFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return res;
 });
+// admin
+const getCustomer = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield db_1.prisma.order.findMany({ include: {
+            user: {
+                select: {
+                    email: true,
+                    name: true
+                }
+            },
+        }, take: 10, orderBy: {
+            totalPrice: "desc"
+        } });
+    return res;
+});
+// admin
+const getLatestOrder = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield db_1.prisma.order.findMany({ include: {
+            user: {
+                select: {
+                    email: true,
+                    name: true
+                }
+            },
+        }, take: 5, orderBy: {
+            createdAt: "desc"
+        } });
+    return res;
+});
 exports.orderServices = {
     insertIntoDB,
     getAllFromDB,
     getById,
     updateIntoDB,
     deleteFromDB,
+    getCustomer,
+    getLatestOrder,
 };

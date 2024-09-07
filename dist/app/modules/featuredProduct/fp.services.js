@@ -33,11 +33,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     return result;
 });
 const getAllFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield db_1.prisma.featuredProduct.findMany({
-        include: {
+    const res = yield db_1.prisma.featuredProduct.findMany({ where: {
+            product: {
+                isDeleted: false
+            }
+        }, include: {
             product: true
-        }
-    });
+        } });
     return res;
 });
 const getById = (id) => __awaiter(void 0, void 0, void 0, function* () {

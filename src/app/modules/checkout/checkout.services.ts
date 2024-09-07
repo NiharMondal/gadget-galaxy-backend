@@ -5,8 +5,9 @@ type ProductPayload = {
     price:number;
     quantity:number;
 }
-const makeCheckout = async(payload: ProductPayload[] )=>{
+const makeCheckout = async(payload: ProductPayload[] ) => {
     try {
+
         const lineItems = payload.map((pd: ProductPayload) => {
 		return {
 			price_data: {

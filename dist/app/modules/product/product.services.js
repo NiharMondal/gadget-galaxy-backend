@@ -75,6 +75,9 @@ const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
             })),
         });
     }
+    andConditions.push({
+        isDeleted: false
+    });
     const whereConditions = { AND: andConditions };
     const total = yield db_1.prisma.product.count({ where: whereConditions });
     const totalPages = Math.ceil(total / limit);
@@ -97,13 +100,20 @@ const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
         result
     };
 });
-const getById = (slug) => __awaiter(void 0, void 0, void 0, function* () {
+// get by id
+const getById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield db_1.prisma.product.findUniqueOrThrow({
+        where: {
+            id
+        },
+    });
+    return res;
+});
+//get by slug
+const getBySlug = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield db_1.prisma.product.findUniqueOrThrow({
         where: {
             slug: slug
-        },
-        include: {
-            reviews: true
         }
     });
     return res;
@@ -136,11 +146,28 @@ const softDeleteFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
     });
     return res;
 });
+const relatedProduct = (slug) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentProduct = yield db_1.prisma.product.findUniqueOrThrow({
+        where: { slug }
+    });
+    const minPrice = currentProduct.price * 0.8; // 20% below the current product's price
+    const maxPrice = currentProduct.price * 1.5; // 50% above the current product's price
+    const res = yield db_1.prisma.product.findMany({
+        where: {
+            price: { gte: minPrice, lte: maxPrice },
+            slug: { not: slug }
+        },
+        take: 8
+    });
+    return res;
+});
 exports.productServices = {
     insertIntoDB,
     getAllFromDB,
     getById,
+    getBySlug,
     updateIntoDB,
     deleteFromDB,
     softDeleteFromDB,
+    relatedProduct,
 };

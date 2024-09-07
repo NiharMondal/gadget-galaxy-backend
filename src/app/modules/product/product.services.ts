@@ -21,7 +21,7 @@ const getAllFromDB = async (query: TQuery) => {
 	const queryCopy = {...query}
 	
 	const excludedField = ["sortby", "orderBy", "page","limit"];
-	excludedField.forEach(field=> delete queryCopy[field]);
+	excludedField.forEach(field => delete queryCopy[field]);
  
 	const {search, price, ...others} = queryCopy;
 	const {limit, skip,page} = pagination(Number(query.page), Number(query.limit))
@@ -62,10 +62,14 @@ const getAllFromDB = async (query: TQuery) => {
             })),
         });
     }
-
+	andConditions.push({
+		isDeleted: false
+	});
 	const whereConditions:Prisma.ProductWhereInput = {AND: andConditions}
+
 	const total = await prisma.product.count({where:whereConditions});
 	const totalPages = Math.ceil(total/limit)
+
 	const result = await prisma.product.findMany({
 		where: whereConditions,
 		skip,
@@ -86,20 +90,26 @@ const getAllFromDB = async (query: TQuery) => {
 		result
 	};
 };
-
-const getById = async (slug: string) => {
+// get by id
+const getById = async (id: string) => {
+	const res = await prisma.product.findUniqueOrThrow({
+		where:{
+			id
+		},
+	});
+	return res;
+};
+//get by slug
+const getBySlug = async (slug: string) => {
 	const res = await prisma.product.findUniqueOrThrow({
 		where:{
 			slug:slug
-		},
-		include:{
-			reviews:true
 		}
 	});
 	return res;
 };
 
-const updateIntoDB = async (id: string, payload: Product) => {
+const updateIntoDB = async (id: string, payload: Partial<Product>) => {
 	const res = await prisma.product.update({
 		where: {
 			id: id,
@@ -133,12 +143,32 @@ const softDeleteFromDB = async (id: string) => {
 
 	return res;
 };
+const relatedProduct = async(slug:string)=>{
+	const currentProduct = await prisma.product.findUniqueOrThrow({
+		where:{slug}
+	})
+	const minPrice = currentProduct.price * 0.8; // 20% below the current product's price
+    const maxPrice = currentProduct.price * 1.5; // 50% above the current product's price
 
+
+	const res = await prisma.product.findMany({
+		where:{
+			price:{gte:minPrice, lte:maxPrice},
+			slug: {not:slug}
+		},
+		take:8
+	});
+
+	return res;
+}
 export const productServices = {
 	insertIntoDB,
 	getAllFromDB,
 	getById,
+	getBySlug,
 	updateIntoDB,
 	deleteFromDB,
 	softDeleteFromDB,
+
+	relatedProduct,
 };

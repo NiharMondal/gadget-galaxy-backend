@@ -56,10 +56,37 @@ const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 		data: result,
 	});
 });
+
+
+//admin
+const getCustomer = catchAsync(async (req: Request, res: Response) => {
+	
+	const result = await orderServices.getCustomer();
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Customer fetched successfully",
+		data: result,
+	});
+});
+//admin
+const getLatestOrder = catchAsync(async (req: Request, res: Response) => {
+	
+	const result = await orderServices.getLatestOrder();
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Latest fetched successfully",
+		data: result,
+	});
+});
 export const orderController = {
 	insertIntoDB,
 	getAllFromDB,
 	getById,
 	updateIntoDB,
 	deleteFromDB,
+
+	getCustomer,
+	getLatestOrder
 };

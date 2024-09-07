@@ -39,7 +39,11 @@ const insertIntoDB = async (payload: HotOffers) => {
 };
 
 const getAllFromDB = async () => {
-	const res = await prisma.hotOffers.findMany({include:{
+	const res = await prisma.hotOffers.findMany({where:{
+		product:{
+			isDeleted:false
+		}
+	},include:{
 		product:true
 	}});
 	return res;
