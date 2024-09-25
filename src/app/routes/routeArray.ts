@@ -10,6 +10,7 @@ import { hotOffersRoutes } from "../modules/offeredProduct/op.route";
 import { featuredProductRoutes } from "../modules/featuredProduct/fp.route";
 import { checkoutRoutes } from "../modules/checkout/checkout.route";
 import { adminDataRoutes } from "../modules/adminData/adminData.route";
+import { reviewRoutes } from "../modules/review/review.route";
 
 export const routeArray = [
 	{
@@ -47,6 +48,10 @@ export const routeArray = [
 	{
 		path: "/checkout",
 		route: checkoutRoutes,
+	},
+	{
+		path: "/review",
+		route: reviewRoutes
 	},
 	{
 		path: "/meta-data",

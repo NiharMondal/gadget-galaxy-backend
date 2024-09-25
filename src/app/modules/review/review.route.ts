@@ -13,4 +13,4 @@ router
 	.patch(reviewController.updateIntoDB)
 	.delete(reviewController.deleteFromDB);
 
-export const subCategoryRoutes = router;
+export const reviewRoutes = router;

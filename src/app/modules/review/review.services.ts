@@ -2,11 +2,41 @@ import { Review } from "@prisma/client";
 import { prisma } from "../../../db/db";
 
 const insertIntoDB = async (payload: Review) => {
-	const res = await prisma.review.create({
-		data: payload,
-	});
+	const result = await prisma.$transaction(async(tx)=>{
 
-	return res;
+		const product = await tx.product.findUniqueOrThrow({
+			where:{
+				id: payload.productId as string
+			},
+			include:{
+				reviews:true,
+			}
+		})
+
+
+		const newReviewCount = product.reviews.length + 1;
+		const totalRating = product.reviews.reduce((sum, review)=> sum + review.rating, payload.rating);
+		const newRating = totalRating/newReviewCount;
+
+
+		const review = await tx.review.create({
+			data: payload,
+		});
+
+		 await tx.product.update({
+			where:{
+				id: payload.productId as string
+			},
+			data:{
+				rating: newRating
+			}
+		})
+
+		return review;
+
+	})
+
+	return result;
 };
 
 const getAllFromDB = async () => {
