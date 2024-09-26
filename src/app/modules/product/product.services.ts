@@ -104,6 +104,16 @@ const getBySlug = async (slug: string) => {
 	const res = await prisma.product.findUniqueOrThrow({
 		where:{
 			slug:slug
+		},
+		include:{
+			reviews:{
+				include: {user:{
+					select:{
+						name: true,
+						avatar:true,
+					}
+				}}
+			}
 		}
 	});
 	return res;

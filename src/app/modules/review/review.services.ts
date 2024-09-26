@@ -44,8 +44,9 @@ const getAllFromDB = async () => {
 	return res;
 };
 
+
 const getById = async (id: string) => {
-	const res = await prisma.review.findUnique({
+	const res = await prisma.review.findMany({
 		where: {
 			id: id,
 		},
@@ -78,6 +79,7 @@ const deleteFromDB = async (id: string) => {
 export const reviewServices = {
 	insertIntoDB,
 	getAllFromDB,
+	
 	getById,
 	updateIntoDB,
 	deleteFromDB,
