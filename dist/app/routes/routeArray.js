@@ -11,6 +11,7 @@ const op_route_1 = require("../modules/offeredProduct/op.route");
 const fp_route_1 = require("../modules/featuredProduct/fp.route");
 const checkout_route_1 = require("../modules/checkout/checkout.route");
 const adminData_route_1 = require("../modules/adminData/adminData.route");
+const review_route_1 = require("../modules/review/review.route");
 exports.routeArray = [
     {
         path: "/user",
@@ -47,6 +48,10 @@ exports.routeArray = [
     {
         path: "/checkout",
         route: checkout_route_1.checkoutRoutes,
+    },
+    {
+        path: "/review",
+        route: review_route_1.reviewRoutes
     },
     {
         path: "/meta-data",

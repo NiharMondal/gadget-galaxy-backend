@@ -114,6 +114,16 @@ const getBySlug = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield db_1.prisma.product.findUniqueOrThrow({
         where: {
             slug: slug
+        },
+        include: {
+            reviews: {
+                include: { user: {
+                        select: {
+                            name: true,
+                            avatar: true,
+                        }
+                    } }
+            }
         }
     });
     return res;
