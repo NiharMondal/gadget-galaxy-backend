@@ -87,10 +87,27 @@ const updateUserAvatar = (id, payload) => __awaiter(void 0, void 0, void 0, func
     });
     return res;
 });
+//admin can see top customer
+const topCustomer = () => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield db_1.prisma.order.groupBy({
+        by: "userId",
+        _sum: {
+            totalPrice: true
+        },
+        orderBy: {
+            _sum: {
+                totalPrice: "desc"
+            }
+        },
+        take: 10
+    });
+    return res;
+});
 exports.userServices = {
     getAllFromDB,
     getById,
     updateIntoDB,
     deleteFromDB,
-    updateUserAvatar
+    updateUserAvatar,
+    topCustomer
 };

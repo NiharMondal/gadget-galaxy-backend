@@ -40,7 +40,18 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     return result;
 });
 const getAllFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield db_1.prisma.review.findMany();
+    const res = yield db_1.prisma.review.findMany({ include: {
+            product: {
+                select: {
+                    name: true,
+                }
+            },
+            user: {
+                select: {
+                    name: true
+                }
+            }
+        } });
     return res;
 });
 const getById = (id) => __awaiter(void 0, void 0, void 0, function* () {

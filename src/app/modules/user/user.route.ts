@@ -3,7 +3,7 @@ import { userController } from "./user.controller";
 
 const router = Router();
 router.get("/", userController.getAllFromDB);
-
+router.get("/top-customer", userController.topCustomer)
 router
 	.route("/:id")
 	.get(userController.getById)

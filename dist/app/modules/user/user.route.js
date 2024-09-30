@@ -5,6 +5,7 @@ const express_1 = require("express");
 const user_controller_1 = require("./user.controller");
 const router = (0, express_1.Router)();
 router.get("/", user_controller_1.userController.getAllFromDB);
+router.get("/top-customer", user_controller_1.userController.topCustomer);
 router
     .route("/:id")
     .get(user_controller_1.userController.getById)

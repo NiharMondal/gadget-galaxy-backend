@@ -63,7 +63,11 @@ const insertIntoDB = async (payload: TPayload) => {
 };
 
 const getAllFromDB = async () => {
-	const res = await prisma.order.findMany({});
+	const res = await prisma.order.findMany({
+		orderBy:{
+			createdAt:"desc"
+		}
+	});
 	return res;
 };
 
@@ -108,22 +112,6 @@ const deleteFromDB = async (id: string) => {
 	return res;
 };
 
-// admin
-const getCustomer = async () => {
-	const res = await prisma.order.findMany({include:{
-		user:{
-			select: {
-				email:true,
-				name:true
-			}
-		},
-		
-	},take:10,orderBy:{
-		totalPrice:"desc"
-	}});
-
-	return res;
-};
 
 // admin
 const getLatestOrder = async () => {
@@ -148,6 +136,6 @@ export const orderServices = {
 	updateIntoDB,
 	deleteFromDB,
 
-	getCustomer,
+	//admin
 	getLatestOrder,
 };

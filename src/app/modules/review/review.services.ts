@@ -40,7 +40,18 @@ const insertIntoDB = async (payload: Review) => {
 };
 
 const getAllFromDB = async () => {
-	const res = await prisma.review.findMany();
+	const res = await prisma.review.findMany({include:{
+		product:{
+			select:{
+				name: true,
+			}
+		},
+		user:{
+			select:{
+				name:true
+			}
+		}
+	}});
 	return res;
 };
 

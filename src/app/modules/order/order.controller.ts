@@ -59,17 +59,6 @@ const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 
 
 //admin
-const getCustomer = catchAsync(async (req: Request, res: Response) => {
-	
-	const result = await orderServices.getCustomer();
-
-	sendResponse(res, {
-		statusCode: 200,
-		message: "Customer fetched successfully",
-		data: result,
-	});
-});
-//admin
 const getLatestOrder = catchAsync(async (req: Request, res: Response) => {
 	
 	const result = await orderServices.getLatestOrder();
@@ -87,6 +76,5 @@ export const orderController = {
 	updateIntoDB,
 	deleteFromDB,
 
-	getCustomer,
 	getLatestOrder
 };

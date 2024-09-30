@@ -9,8 +9,6 @@ router
     .post(order_controller_1.orderController.insertIntoDB)
     .get(order_controller_1.orderController.getAllFromDB);
 //admin
-router.get("/customer", order_controller_1.orderController.getCustomer);
-//admin
 router.get("/latest-order", order_controller_1.orderController.getLatestOrder);
 router
     .route("/:id")

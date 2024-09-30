@@ -54,7 +54,18 @@ const updateUserAvatar = catchAsync(async (req: Request, res: Response) => {
 
 	sendResponse(res, {
 		statusCode: 200,
-		message: "Phofile photo changed successfully",
+		message: "Profile photo changed successfully",
+		data: result,
+	});
+});
+
+const topCustomer = catchAsync(async (req: Request, res: Response) => {
+	
+	const result = await userServices.topCustomer();
+
+	sendResponse(res, {
+		statusCode: 200,
+		message: "Top Customer fetched successfully",
 		data: result,
 	});
 });
@@ -66,5 +77,9 @@ export const userController = {
 	getById,
 	updateIntoDB,
 	deleteFromDB,
-	updateUserAvatar
+	updateUserAvatar,
+
+
+	//admin 
+	topCustomer
 };

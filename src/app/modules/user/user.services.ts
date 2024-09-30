@@ -87,10 +87,33 @@ const updateUserAvatar = async(id:string, payload:{avatar:string})=>{
 
 	return res;
 }
+
+
+//admin can see top customer
+const topCustomer = async()=>{
+	const res = await prisma.order.groupBy({
+		by:"userId",
+		_sum:{
+			totalPrice: true
+		},
+		orderBy:{
+			_sum:{
+				totalPrice:"desc"
+			}
+		},
+		take:10
+		
+	})
+	
+	return res;
+
+
+}
 export const userServices = {
 	getAllFromDB,
 	getById,
 	updateIntoDB,
 	deleteFromDB,
-	updateUserAvatar
+	updateUserAvatar,
+	topCustomer
 };

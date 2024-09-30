@@ -9,8 +9,7 @@ router
 	.post(orderController.insertIntoDB)
 	.get(orderController.getAllFromDB);
 
-//admin
-router.get("/customer",orderController.getCustomer)
+
 //admin
 router.get("/latest-order",orderController.getLatestOrder)
 
