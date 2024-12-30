@@ -20,7 +20,8 @@ type TChangePasswordPayload = {
 	};
 };
 type TResetPasswordPaylod = {
-	user: JwtPayload;
+	id: string;
+	token: string;
 	payload: {
 		password: string;
 		confirmPassword: string;
@@ -126,12 +127,15 @@ const changePassword = async ({ payload, user }: TChangePasswordPayload) => {
 
 //forgot-password
 const forgotPassword = async (payload: TForgotPasswordRequest) => {
-	const user = await prisma.user.findUniqueOrThrow({
+	const user = await prisma.user.findUnique({
 		where: {
 			email: payload.email,
 		},
 	});
 
+	if (!user) {
+		throw new AppError(404, "User not found!");
+	}
 	const token = {
 		id: user.id,
 		email: user.email,
@@ -151,8 +155,38 @@ const forgotPassword = async (payload: TForgotPasswordRequest) => {
 	}
 };
 
-const resetPassword = async ({ user, payload }: TResetPasswordPaylod) => {
-	console.log(payload, user);
+const resetPassword = async ({ id, token, payload }: TResetPasswordPaylod) => {
+	if (!id || !token) {
+		throw new AppError(400, "ID or Token is not valid");
+	}
+
+	if (payload.password !== payload.confirmPassword) {
+		throw new AppError(400, "Sorry, Password doesn't match");
+	}
+
+	const decodedUser = jwt.verify(
+		token,
+		config.jwt_secret as string
+	) as JwtPayload;
+
+	await prisma.user.findUniqueOrThrow({
+		where: { id: decodedUser?.id },
+	});
+
+	//hash password
+	const hashPassword = await bcrypt.hash(
+		payload.password,
+		Number(config.salt_round)
+	);
+
+	await prisma.user.update({
+		where: {
+			id,
+		},
+		data: {
+			password: hashPassword,
+		},
+	});
 };
 
 export const authServices = {

@@ -4,7 +4,6 @@ import catchAsync from "../../../utils/catchAsync";
 import sendResponse from "../../../utils/sendResponse";
 
 const register = catchAsync(async (req: Request, res: Response) => {
-
 	const result = await authServices.register(req.body);
 
 	sendResponse(res, {
@@ -24,15 +23,18 @@ const login = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+//forgot password
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
 	const result = await authServices.forgotPassword(req.body);
 
 	sendResponse(res, {
 		statusCode: 200,
-		message: "Nevigating to password change page",
+		message: "Reset link email has been sent",
 		data: result,
 	});
 });
+
+//change password
 const changePassword = catchAsync(async (req: Request, res: Response) => {
 	const result = await authServices.changePassword({
 		payload: req.body,
@@ -46,9 +48,14 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+//reset-password
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-	const user = req.user;
-	const result = await authServices.resetPassword({ user, payload: req.body });
+	const { token, id } = req.query;
+	const result = await authServices.resetPassword({
+		id: id as string,
+		token: token as string,
+		payload: req.body,
+	});
 
 	sendResponse(res, {
 		statusCode: 200,
