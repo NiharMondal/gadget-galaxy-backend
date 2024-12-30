@@ -32,14 +32,16 @@ const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
         data: result,
     });
 }));
+//forgot password
 const forgotPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_services_1.authServices.forgotPassword(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
-        message: "Nevigating to password change page",
+        message: "Reset link email has been sent",
         data: result,
     });
 }));
+//change password
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_services_1.authServices.changePassword({
         payload: req.body,
@@ -51,9 +53,14 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+//reset-password
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = req.user;
-    const result = yield auth_services_1.authServices.resetPassword({ user, payload: req.body });
+    const { token, id } = req.query;
+    const result = yield auth_services_1.authServices.resetPassword({
+        id: id,
+        token: token,
+        payload: req.body,
+    });
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         message: "Password reseted successfully",
