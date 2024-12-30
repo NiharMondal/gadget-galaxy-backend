@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-
 import { User } from "@prisma/client";
 import config from "../../../config";
 import { prisma } from "../../../db/db";
 import AppError from "../../../utils/appError";
+import { sendEmail } from "../../../helpers/sendEmail";
 
 type TLoginPayload = {
 	email: string;
@@ -26,7 +26,9 @@ type TResetPasswordPaylod = {
 		confirmPassword: string;
 	};
 };
-
+type TForgotPasswordRequest = {
+	email: string;
+};
 const register = async (payload: User) => {
 	//hash password
 	const hashPassword = await bcrypt.hash(
@@ -40,19 +42,18 @@ const register = async (payload: User) => {
 			...payload,
 			password: hashPassword,
 		},
-		select:{
-			id:true,
-			name:true,
-			email:true,
-			phone:true,
-			role:true,
-			avatar:true,
-			createdAt:true,
-			updatedAt:true,
-		}
+		select: {
+			id: true,
+			name: true,
+			email: true,
+			phone: true,
+			role: true,
+			avatar: true,
+			createdAt: true,
+			updatedAt: true,
+		},
 	});
 
-	
 	return user;
 };
 
@@ -79,25 +80,12 @@ const login = async (payload: TLoginPayload) => {
 		expiresIn: config.jwt_expires,
 	});
 
-	return { 
-		
-		authToken: userToken, 
+	return {
+		authToken: userToken,
 		avatar: user.avatar,
 	};
 };
 
-const forgotPassword = async (payload: { email: string }) => {
-	await prisma.user.findUniqueOrThrow({
-		where: {
-			email: payload.email,
-		},
-		select: {
-			id: true,
-			name: true,
-			email: true,
-		},
-	});
-};
 const changePassword = async ({ payload, user }: TChangePasswordPayload) => {
 	//check new password and old password
 	if (payload.oldPassword === payload.newPassword) {
@@ -136,8 +124,41 @@ const changePassword = async ({ payload, user }: TChangePasswordPayload) => {
 	});
 };
 
+//forgot-password
+const forgotPassword = async (payload: TForgotPasswordRequest) => {
+	const user = await prisma.user.findUniqueOrThrow({
+		where: {
+			email: payload.email,
+		},
+	});
+
+	const token = {
+		id: user.id,
+		email: user.email,
+		name: user.name,
+		role: user.role,
+	} as JwtPayload;
+
+	const userToken = jwt.sign(token, config.jwt_secret as string, {
+		expiresIn: "10m",
+	});
+	const resetUiLink = `${config.domain_url}/reset-password?id=${user.id}&token=${userToken}`;
+	try {
+		const res = await sendEmail(user.email, resetUiLink);
+		return res;
+	} catch (error) {
+		throw new AppError(400, "Something went wrong!");
+	}
+};
+
 const resetPassword = async ({ user, payload }: TResetPasswordPaylod) => {
 	console.log(payload, user);
 };
 
-export const authServices = {register, login, forgotPassword, changePassword,resetPassword };
+export const authServices = {
+	register,
+	login,
+	forgotPassword,
+	changePassword,
+	resetPassword,
+};
