@@ -3,10 +3,8 @@ import { prisma } from "../../../db/db";
 import slugify from "slugify";
 import { pagination } from "../../../helpers/pagination";
 
-
 const insertIntoDB = async (payload: Product) => {
-
-	const slug =  slugify(payload.name,{lower:true});
+	const slug = slugify(payload.name, { lower: true });
 	const res = await prisma.product.create({
 		data: {
 			...payload,
@@ -18,16 +16,19 @@ const insertIntoDB = async (payload: Product) => {
 };
 
 const getAllFromDB = async (query: TQuery) => {
-	const queryCopy = {...query}
-	
-	const excludedField = ["sortby", "orderBy", "page","limit"];
-	excludedField.forEach(field => delete queryCopy[field]);
- 
-	const {search, price, ...others} = queryCopy;
-	const {limit, skip,page} = pagination(Number(query.page), Number(query.limit))
-	const andConditions:Prisma.ProductWhereInput[] = []
+	const queryCopy = { ...query };
 
-	if (search) { 
+	const excludedField = ["sortby", "orderBy", "page", "limit"];
+	excludedField.forEach((field) => delete queryCopy[field]);
+
+	const { search, price, ...others } = queryCopy;
+	const { limit, skip, page } = pagination(
+		Number(query.page),
+		Number(query.limit)
+	);
+	const andConditions: Prisma.ProductWhereInput[] = [];
+
+	if (search) {
 		andConditions.push({
 			OR: ["name"].map((value) => ({
 				[value]: {
@@ -50,51 +51,53 @@ const getAllFromDB = async (query: TQuery) => {
 				},
 			],
 		});
-	};
+	}
 
-	 // Handle other filters
-    if (Object.keys(others).length > 0) {
-        andConditions.push({
-            OR: Object.keys(others).map((key) => ({
-                [key]: {
-                    in: decodeURIComponent(others[key]).split(","),
-                },
-            })),
-        });
-    }
+	// Handle other filters
+	if (Object.keys(others).length > 0) {
+		andConditions.push({
+			OR: Object.keys(others).map((key) => ({
+				[key]: {
+					in: decodeURIComponent(others[key]).split(","),
+				},
+			})),
+		});
+	}
 	andConditions.push({
-		isDeleted: false
+		isDeleted: false,
 	});
-	const whereConditions:Prisma.ProductWhereInput = {AND: andConditions}
+	const whereConditions: Prisma.ProductWhereInput = { AND: andConditions };
 
-	const total = await prisma.product.count({where:whereConditions});
-	const totalPages = Math.ceil(total/limit)
+	const total = await prisma.product.count({ where: whereConditions });
+	const totalPages = Math.ceil(total / limit);
 
 	const result = await prisma.product.findMany({
 		where: whereConditions,
 		skip,
-		take:limit,
-		orderBy: query.orderBy ? {
-			price:  query.orderBy as "asc" | "desc"
-		}: {
-			createdAt:"asc"
-		}
-	
+		take: limit,
+		orderBy: query.orderBy
+			? {
+					price: query.orderBy as "asc" | "desc",
+			  }
+			: {
+					createdAt: "asc",
+			  },
 	});
 	const meta = {
 		page,
 		totalPages,
-	}
+		total,
+	};
 	return {
 		meta,
-		result
+		result,
 	};
 };
 // get by id
 const getById = async (id: string) => {
 	const res = await prisma.product.findUniqueOrThrow({
-		where:{
-			id
+		where: {
+			id,
 		},
 	});
 	return res;
@@ -102,19 +105,21 @@ const getById = async (id: string) => {
 //get by slug
 const getBySlug = async (slug: string) => {
 	const res = await prisma.product.findUniqueOrThrow({
-		where:{
-			slug:slug
+		where: {
+			slug: slug,
 		},
-		include:{
-			reviews:{
-				include: {user:{
-					select:{
-						name: true,
-						avatar:true,
-					}
-				}}
-			}
-		}
+		include: {
+			reviews: {
+				include: {
+					user: {
+						select: {
+							name: true,
+							avatar: true,
+						},
+					},
+				},
+			},
+		},
 	});
 	return res;
 };
@@ -134,7 +139,6 @@ const deleteFromDB = async (id: string) => {
 	const res = await prisma.product.delete({
 		where: {
 			id: id,
-			
 		},
 	});
 
@@ -153,24 +157,23 @@ const softDeleteFromDB = async (id: string) => {
 
 	return res;
 };
-const relatedProduct = async(slug:string)=>{
+const relatedProduct = async (slug: string) => {
 	const currentProduct = await prisma.product.findUniqueOrThrow({
-		where:{slug}
-	})
+		where: { slug },
+	});
 	const minPrice = currentProduct.price * 0.8; // 20% below the current product's price
-    const maxPrice = currentProduct.price * 1.5; // 50% above the current product's price
-
+	const maxPrice = currentProduct.price * 1.5; // 50% above the current product's price
 
 	const res = await prisma.product.findMany({
-		where:{
-			price:{gte:minPrice, lte:maxPrice},
-			slug: {not:slug}
+		where: {
+			price: { gte: minPrice, lte: maxPrice },
+			slug: { not: slug },
 		},
-		take:8
+		take: 8,
 	});
 
 	return res;
-}
+};
 export const productServices = {
 	insertIntoDB,
 	getAllFromDB,

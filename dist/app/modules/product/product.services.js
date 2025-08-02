@@ -37,7 +37,7 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
 const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const queryCopy = Object.assign({}, query);
     const excludedField = ["sortby", "orderBy", "page", "limit"];
-    excludedField.forEach(field => delete queryCopy[field]);
+    excludedField.forEach((field) => delete queryCopy[field]);
     const { search, price } = queryCopy, others = __rest(queryCopy, ["search", "price"]);
     const { limit, skip, page } = (0, pagination_1.pagination)(Number(query.page), Number(query.limit));
     const andConditions = [];
@@ -64,7 +64,6 @@ const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
             ],
         });
     }
-    ;
     // Handle other filters
     if (Object.keys(others).length > 0) {
         andConditions.push({
@@ -76,7 +75,7 @@ const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     andConditions.push({
-        isDeleted: false
+        isDeleted: false,
     });
     const whereConditions = { AND: andConditions };
     const total = yield db_1.prisma.product.count({ where: whereConditions });
@@ -85,26 +84,29 @@ const getAllFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
         where: whereConditions,
         skip,
         take: limit,
-        orderBy: query.orderBy ? {
-            price: query.orderBy
-        } : {
-            createdAt: "asc"
-        }
+        orderBy: query.orderBy
+            ? {
+                price: query.orderBy,
+            }
+            : {
+                createdAt: "asc",
+            },
     });
     const meta = {
         page,
         totalPages,
+        total,
     };
     return {
         meta,
-        result
+        result,
     };
 });
 // get by id
 const getById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield db_1.prisma.product.findUniqueOrThrow({
         where: {
-            id
+            id,
         },
     });
     return res;
@@ -113,18 +115,20 @@ const getById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getBySlug = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield db_1.prisma.product.findUniqueOrThrow({
         where: {
-            slug: slug
+            slug: slug,
         },
         include: {
             reviews: {
-                include: { user: {
+                include: {
+                    user: {
                         select: {
                             name: true,
                             avatar: true,
-                        }
-                    } }
-            }
-        }
+                        },
+                    },
+                },
+            },
+        },
     });
     return res;
 });
@@ -158,16 +162,16 @@ const softDeleteFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
 });
 const relatedProduct = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const currentProduct = yield db_1.prisma.product.findUniqueOrThrow({
-        where: { slug }
+        where: { slug },
     });
     const minPrice = currentProduct.price * 0.8; // 20% below the current product's price
     const maxPrice = currentProduct.price * 1.5; // 50% above the current product's price
     const res = yield db_1.prisma.product.findMany({
         where: {
             price: { gte: minPrice, lte: maxPrice },
-            slug: { not: slug }
+            slug: { not: slug },
         },
-        take: 8
+        take: 8,
     });
     return res;
 });
